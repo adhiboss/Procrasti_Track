@@ -26,12 +26,4 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Insert dummy data if desired
-INSERT INTO users (id, name, email, pw_hash, xp, level, streak) VALUES 
-(1, 'Demo Student', 'demo@student.edu', 'demo_hash', 1240, 7, 5) 
-ON DUPLICATE KEY UPDATE id=id;
-
-INSERT INTO tasks (user_id, title, subject, due_date, status, done, xp, source) VALUES 
-(1, 'Chapter 6 exercises', 'Math 101', CURRENT_DATE - INTERVAL 1 DAY, 'overdue', 0, 50, 'manual'),
-(1, 'Cell division report', 'Biology', CURRENT_DATE + INTERVAL 1 DAY, 'upcoming', 0, 80, 'manual'),
-(1, 'Lab report', 'Chemistry', CURRENT_DATE, 'today', 0, 70, 'manual');
+-- No dummy data initially

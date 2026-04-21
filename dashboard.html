@@ -115,14 +115,14 @@
 
   <!-- TOP BAR -->
   <div class="dash-top">
-    <div class="level-badge" id="levelBadge">7</div>
+    <div class="level-badge" id="levelBadge">1</div>
     <div>
       <div style="font-weight:900;font-size:1.2rem">Hey, Student 👋</div>
-      <div style="font-size:.85rem;color:var(--text2);font-weight:600">Deadline Dodger · Lv.7 · Keep going!</div>
+      <div style="font-size:.85rem;color:var(--text2);font-weight:600">Deadline Dodger · Lv.1 · Keep going!</div>
     </div>
     <div style="margin-left:auto;display:flex;gap:.625rem;align-items:center;flex-wrap:wrap">
       <div class="hearts-display" id="heartsTopBar"></div>
-      <div class="streak-badge" id="streakBadge">🔥 5</div>
+      <div class="streak-badge" id="streakBadge">🔥 0</div>
       <div id="gcAccountBadge" style="display:none;align-items:center;gap:6px;background:var(--green-lt);border:1.5px solid var(--green);border-radius:99px;padding:5px 14px;font-size:.8rem;font-weight:800;color:var(--green-dk)"></div>
       <button onclick="syncClassroom()" id="syncBtn" class="btn btn-secondary" style="font-size:.85rem">⟳ Sync Classroom</button>
     </div>
@@ -132,15 +132,15 @@
   <div class="card" style="margin-bottom:1.25rem;padding:1rem 1.5rem">
     <div style="display:flex;align-items:center;gap:1.5rem">
       <div style="flex:1">
-        <div style="font-size:.78rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem">XP Progress — Level 7</div>
+        <div style="font-size:.78rem;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem">XP Progress — Level 1</div>
         <div style="display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;color:var(--text2);margin-bottom:.4rem">
-          <span id="xpLabel">1,240 XP</span><span id="xpNext">260 XP to Level 8</span>
+          <span id="xpLabel">0 XP</span><span id="xpNext">100 XP to Level 2</span>
         </div>
         <div class="xp-bar-wrap" style="width:100%"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div style="font-size:.75rem;color:var(--text2);font-weight:700">Today</div>
-        <div style="font-weight:900;font-size:1.4rem;color:var(--gold-dk)" id="todayXp">+80 ⚡</div>
+        <div style="font-weight:900;font-size:1.4rem;color:var(--gold-dk)" id="todayXp">+0 ⚡</div>
       </div>
     </div>
   </div>
@@ -245,7 +245,7 @@
 
 <script src="app.js"></script>
 <script>
-let xpTotal = 1240;
+let xpTotal = 0;
 let tasks = [];
 const memeList = [
   'images/motivational_owl_meme_1776022064264.png',
@@ -301,7 +301,7 @@ function renderStats() {
     ['📋','Today',tasks.filter(t=>t.due==='Today'||t.due==='Overdue').length,'green'],
     ['✅','Done',done,'gold-dk'],
     ['🚨','Overdue',over,'red'],
-    ['🔥','Streak','5 days','orange'],
+    ['🔥','Streak','0 days','orange'],
   ].map(([e,l,v,c])=>`
     <div class="duo-card ${c.split('-')[0]}" style="text-align:center;padding:1rem">
       <div style="font-size:1.5rem">${e}</div>
@@ -544,7 +544,7 @@ window.addEventListener('load',()=>{
   checkEnvironment();
   renderHearts(); renderWeek(); renderBadges();
   fetchTasks(); // Load from MySQL instead of rendering hardcoded tasks
-  setTimeout(()=>{ const f=document.getElementById('xpFill'); if(f) f.style.width='83%'; }, 400);
+  setTimeout(()=>{ const f=document.getElementById('xpFill'); if(f) f.style.width='0%'; }, 400);
   initGoogleClient();
 });
 </script>

@@ -118,17 +118,78 @@ function switchTab(t){
   document.getElementById('tabSignup').classList.toggle('active',t==='signup');
 }
 function googleLogin(){ showLoginSuccess(); }
-function emailLogin(){
+async function emailLogin(){
   const e=document.getElementById('loginEmail').value;
   const p=document.getElementById('loginPw').value;
   if(!e||!p){ alert('Please fill in all fields.'); return; }
-  showLoginSuccess();
+  
+  const fd = new FormData();
+  fd.append('action', 'login');
+  fd.append('email', e);
+  fd.append('password', p);
+  
+  try {
+    const btn = document.getElementById('login-btn');
+    btn.textContent = 'Logging in...';
+    btn.disabled = true;
+    const res = await fetch('auth.php', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const s = {
+        xp: parseInt(data.user.xp) || 0,
+        level: parseInt(data.user.level) || 1,
+        streak: parseInt(data.user.streak) || 0,
+        hearts: 5,
+        tasks: []
+      };
+      localStorage.setItem('procrastitrack_state', JSON.stringify(s));
+      showLoginSuccess();
+    } else {
+      alert(data.error || 'Login failed');
+      btn.textContent = 'Log in & start learning →';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    alert('Server error. Make sure you are running on a local server like XAMPP.');
+    document.getElementById('login-btn').textContent = 'Log in & start learning →';
+    document.getElementById('login-btn').disabled = false;
+  }
 }
-function emailSignup(){
+
+async function emailSignup(){
   const n=document.getElementById('signName').value;
   const e=document.getElementById('signEmail').value;
-  if(!n||!e){ alert('Please fill in all fields.'); return; }
-  showLoginSuccess();
+  const p=document.getElementById('signPw').value;
+  const s=document.getElementById('signSchool').value;
+  if(!n||!e||!p){ alert('Please fill in all required fields.'); return; }
+  
+  const fd = new FormData();
+  fd.append('action', 'signup');
+  fd.append('name', n);
+  fd.append('email', e);
+  fd.append('password', p);
+  fd.append('school', s);
+  
+  try {
+    const btn = document.getElementById('signup-btn');
+    btn.textContent = 'Creating account...';
+    btn.disabled = true;
+    const res = await fetch('auth.php', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const state = { xp: 0, level: 1, streak: 0, hearts: 5, tasks: [] };
+      localStorage.setItem('procrastitrack_state', JSON.stringify(state));
+      showLoginSuccess();
+    } else {
+      alert(data.error || 'Signup failed');
+      btn.textContent = 'Create account & play →';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    alert('Server error. Make sure you are running on a local server like XAMPP.');
+    document.getElementById('signup-btn').textContent = 'Create account & play →';
+    document.getElementById('signup-btn').disabled = false;
+  }
 }
 function showLoginSuccess(){
   const ov=document.getElementById('successOverlay');
@@ -139,7 +200,7 @@ function showLoginSuccess(){
     [1200,'Fetching your courses...','45%'],
     [2000,'Loading assignments & due dates...','70%'],
     [2800,'Setting up your XP profile...','90%'],
-    [3400,'All done! 🎉 5 assignments loaded','100%'],
+    [3400,'All done! 🎉 Setup complete','100%'],
   ];
   steps.forEach(([t,msg,pct])=>{
     setTimeout(()=>{

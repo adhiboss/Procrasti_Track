@@ -1,8 +1,8 @@
 // ─── STATE MANAGEMENT ───
 const defaultState = {
-  xp: 1240,
-  level: 7,
-  streak: 5,
+  xp: 0,
+  level: 1,
+  streak: 0,
   hearts: 5,
   tasks: []
 };
