@@ -59,6 +59,13 @@ try {
 
         echo json_encode(['success' => true, 'tasks' => $tasks]);
     }
+    else if ($action === 'me') {
+        // Return user details for the dashboard
+        $stmt = $pdo->prepare("SELECT id, name, email, school, xp, level, streak FROM users WHERE id = ?");
+        $stmt->execute([$user_id]);
+        $user = $stmt->fetch();
+        echo json_encode(['success' => true, 'user' => $user]);
+    }
     else if ($action === 'toggle') {
         $task_id = $_POST['task_id'] ?? null;
         if (!$task_id) throw new Exception('Missing task_id');
@@ -94,6 +101,18 @@ try {
         $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : null; 
         
         if (!$title) throw new Exception('Title is required');
+
+        // Handle File Upload if exists
+        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = 'uploads/';
+            if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+            $filename = basename($_FILES['file']['name']);
+            // Make filename safe
+            $safe_filename = preg_replace("/[^a-zA-Z0-9.\-_]/", "", $filename);
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $upload_dir . time() . '_' . $safe_filename)) {
+                $title .= ' 📎'; // Visual indicator that a file was attached
+            }
+        }
 
         $status = 'upcoming';
         if ($due_date) {

@@ -135,19 +135,38 @@ function toggleFaq(i){
   ans.style.display=open?'none':'block';
   arr.textContent=open?'+':'−';
 }
-function submitContact(){
+async function submitContact(){
   const n=document.getElementById('cName').value.trim();
   const e=document.getElementById('cEmail').value.trim();
+  const s=document.getElementById('cSubject').value;
   const m=document.getElementById('cMsg').value.trim();
   if(!n||!e||!m){alert('Please fill in name, email, and message.');return;}
+  
   const btn=document.getElementById('sendBtn');
   btn.textContent='Sending... 🦉'; btn.disabled=true;
-  setTimeout(()=>{
-    document.getElementById('formWrap').style.display='none';
-    document.getElementById('formSuccess').style.display='block';
-    confettiBurst(window.innerWidth/2, window.innerHeight/2);
-    floatXP(5, window.innerWidth/2-30, window.innerHeight/2);
-  },1200);
+  
+  const fd = new FormData();
+  fd.append('name', n);
+  fd.append('email', e);
+  fd.append('subject', s);
+  fd.append('message', m);
+  
+  try {
+    const res = await fetch('contact.php', { method: 'POST', body: fd });
+    const data = await res.json();
+    if(res.ok && data.success) {
+      document.getElementById('formWrap').style.display='none';
+      document.getElementById('formSuccess').style.display='block';
+      confettiBurst(window.innerWidth/2, window.innerHeight/2);
+      floatXP(5, window.innerWidth/2-30, window.innerHeight/2);
+    } else {
+      alert("Error: " + (data.error || "Failed to send message"));
+      btn.textContent='Send message 🚀'; btn.disabled=false;
+    }
+  } catch(err) {
+    alert("Error connecting to server. Make sure XAMPP is running.");
+    btn.textContent='Send message 🚀'; btn.disabled=false;
+  }
 }
 function resetForm(){
   document.getElementById('formWrap').style.display='block';

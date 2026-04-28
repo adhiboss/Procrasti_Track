@@ -6,6 +6,8 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
+require_once 'db.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
@@ -23,19 +25,26 @@ if (!$name || !$email || !$message) {
     exit;
 }
 
-// --- In production: send email via PHPMailer / SendGrid ---
-// $mail = new PHPMailer\PHPMailer\PHPMailer();
-// $mail->setFrom('noreply@procrastitrack.app');
-// $mail->addAddress('hello@procrastitrack.app');
-// $mail->Subject = "[ProcrastiTrack Contact] $subject";
-// $mail->Body    = "From: $name <$email>\n\n$message";
-// $mail->send();
+try {
+    // Ensure messages table exists
+    $pdo->exec("CREATE TABLE IF NOT EXISTS messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) NOT NULL,
+        subject VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
 
-// Log to file for demo
-$log = date('Y-m-d H:i:s') . " | $name | $email | $subject\n";
-file_put_contents(__DIR__ . '/contact_log.txt', $log, FILE_APPEND | LOCK_EX);
+    $stmt = $pdo->prepare("INSERT INTO messages (name, email, subject, message) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$name, $email, $subject, $message]);
 
-echo json_encode([
-    'success' => true,
-    'message' => 'Your message has been received. We\'ll reply within 24 hours.'
-]);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Your message has been received. We\'ll reply within 24 hours.'
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+}
+?>
